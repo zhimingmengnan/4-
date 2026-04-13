@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队介绍 - Team Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* 固定导航栏 - 参考图片风格 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+        
+        .nav-logo span {
+            color: #e63946;
+        }
+        
+        /* 固定底部备案栏 */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(10, 10, 10, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 主内容区域（避开固定栏） */
+        .main-content {
+            margin-top: 80px;
+            margin-bottom: 40px;
+            min-height: calc(100vh - 120px);
+        }
+        
+        /* 页面切换动画 */
+        .page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* 导航链接样式 - 参考图片 */
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #fff;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e63946;
+        }
+        
+        .nav-cta {
+            background: #e63946;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+        }
+        
+        .nav-cta:hover {
+            background: #ff4d5a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(230, 57, 70, 0.3);
+        }
+        
+        /* 移动端菜单 */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 30px;
+                gap: 20px;
+                transform: translateY(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s;
+            }
+            
+            .nav-links.open {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: all;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-cta {
+                display: none;
+            }
+        }
+        
+        /* 首页新设计 - 参考汽车网站风格 */
+        .home-hero {
+            min-height: calc(100vh - 120px);
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        
+        .home-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(230, 57, 70, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .hero-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            opacity: 0.5;
+        }
+        
+        .hero-content {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        .hero-left {
+            padding-right: 40px;
+        }
+        
+        .hero-subtitle {
+            font-size: 14px;
+            color: #e63946;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        
+        .hero-title span {
+            display: block;
+            color: transparent;
+            -webkit-text-stroke: 2px #fff;
+            text-stroke: 2px #fff;
+        }
+        
+        .hero-desc {
+            font-size: 16px;
+            color: #888;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-desc {
+                margin: 0 auto 40px;
+            }
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-stats {
+                justify-content: center;
+            }
+        }
+        
+        .hero-stat {
+            text-align: left;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-stat {
+                text-align: center;
+            }
+        }
+        
+        .hero-stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+        
+        .hero-stat-number span {
+            font-size: 14px;
+            color: #e63946;
+        }
+        
+        .hero-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-buttons {
+                justify-content: center;
+            }
+        }
+        
+        .btn-primary {
+            background: #e63946;
+            color: #fff;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            background: #ff4d5a;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(230, 57, 70, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+        }
+        
+        /* 右侧团队成员卡片 */
+        .hero-right {
+            position: relative;
+        }
+        
+        .team-showcase {
+            position: relative;
+            height: 500px;
+        }
+        
+        @media (max-width: 968px) {
+            .team-showcase {
+                height: 400px;
+                margin-top: 40px;
+            }
+        }
+        
+        .team-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            width: 260px;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #e63946;
+            box-shadow: 0 30px 60px rgba(230, 57, 70, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .team-card:nth-child(1) {
+            top: 0;
+            left: 0;
+            z-index: 4;
+        }
+        
+        .team-card:nth-child(2) {
+            top: 100px;
+            left: 220px;
+            z-index: 3;
+        }
+        
+        .team-card:nth-child(3) {
+            top: 200px;
+            left: 80px;
+            z-index: 2;
+        }
+        
+        .team-card:nth-child(4) {
+            top: 300px;
+            left: 300px;
+            z-index: 1;
+        }
+        
+        @media (max-width: 968px) {
+            .team-card {
+                width: 180px;
+                padding: 25px;
+            }
+            
+            .team-card:nth-child(1) { top: 0; left: 5%; }
+            .team-card:nth-child(2) { top: 80px; left: 50%; }
+            .team-card:nth-child(3) { top: 180px; left: 15%; }
+            .team-card:nth-child(4) { top: 260px; left: 55%; }
+        }
+        
+        .team-card-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .team-card:nth-child(1) .team-card-avatar {
+            background: linear-gradient(135deg, #e63946, #ff6b6b);
+        }
+        
+        .team-card:nth-child(2) .team-card-avatar {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        }
+        
+        .team-card:nth-child(3) .team-card-avatar {
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+        }
+        
+        .team-card:nth-child(4) .team-card-avatar {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+        
+        .team-card-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .team-card-role {
+            font-size: 12px;
+            color: #e63946;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .team-card-desc {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        /* 轮播指示器 */
+        .carousel-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 5%;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .carousel-dot {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .carousel-dot.active {
+            background: #e63946;
+            width: 60px;
+        }
+        
+        /* 侧边装饰 */
+        .side-decoration {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .side-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, transparent, #e63946, transparent);
+        }
+        
+        .side-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        
+        @media (max-width: 1200px) {
+            .side-decoration {
+                display: none;
+            }
+        }
+        
+        /* 吴子洋页面 - Nike风格足球销售页 */
+        .nike-page {
+            min-height: calc(100vh - 120px);
+            background: #fff;
+            color: #111;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nike-header {
+            position: sticky;
+            top: 80px;
+            background: #fff;
+            z-index: 100;
+            padding: 20px 5%;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nike-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        
+        .nike-nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nike-nav-item {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .nike-nav-item:hover {
+            color: #111;
+        }
+        
+        .nike-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 200px);
+        }
+        
+        @media (max-width: 968px) {
+            .nike-hero {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .nike-hero-left {
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nike-hero-right {
+            padding: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        @media (max-width: 968px) {
+            .nike-hero-right {
+                padding: 40px;
+            }
+        }
+        
+        .nike-product-tag {
+            font-size: 12px;
+            color: #e63946;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .nike-product-name {
+            font-size: clamp(40px, 5vw, 64px);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+        
+        .nike-product-subtitle {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        
+        .nike-product-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+        
+        .nike-price {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        
+        .nike-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nike-btn-primary {
+            background: #111;
+            color: #fff;
+            padding: 18px 48px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .nike-btn-primary:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+        
+        .nike-btn-secondary {
+            background: transparent;
+            color: #111;
+            padding: 18px 48px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #111;
+        }
+        
+        .nike-btn-secondary:hover {
+            background: #111;
+            color: #fff;
+        }
+        
+        /* 足球展示 */
+        .soccer-ball-display {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+        
+        .soccer-ball {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #ddd 50%, #bbb 100%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 
+                0 50px 100px rgba(0,0,0,0.3),
+                inset -20px -20px 60px rgba(0,0,0,0.1);
+        }
+        
+        .soccer-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        
+        .pentagon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #111;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+        
+        .pentagon:nth-child(1) { top: 20%; left: 50%; transform: translateX(-50%); }
+        .pentagon:nth-child(2) { top: 40%; left: 20%; }
+        .pentagon:nth-child(3) { top: 40%; right: 20%; }
+        .pentagon:nth-child(4) { bottom: 25%; left: 35%; }
+        .pentagon:nth-child(5) { bottom: 25%; right: 35%; }
+        
+        /* 颜色选择 */
+        .color-selector {
+            margin-top: 30px;
+        }
+        
+        .color-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .color-options {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .color-option:hover, .color-option.active {
+            border-color: #111;
+            transform: scale(1.1);
+        }
+        
+        .color-option::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+        }
+        
+        .color-black { background: #111; }
+        .color-white { background: #fff; border: 1px solid #ddd; }
+        .color-red { background: #e63946; }
+        .color-blue { background: #0066ff; }
+        
+        /* 黄先航页面 - 羽毛球火焰效果 */
+        .badminton-page {
+            min-height: calc(100vh - 120px);
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        /* 钟伟锋页面 - 山地车飞驰效果 */
+        .mtb-page {
+            min-height: calc(100vh - 120px);
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        /* 其他成员页面通用样式 */
+        .profile-page {
+            min-height: calc(100vh - 120px);
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+
+    <!-- 固定导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">TEAM<span>.</span></div>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a class="nav-link active" href="?page=home">首页</a>
+            <a class="nav-link" href="?page=wuziyang">钟伟锋</a>
+            <a class="nav-link" href="?page=huangxianhang">黄先航</a>
+            <a class="nav-link" href="?page=zhongweifeng">吴子洋</a>
+            <a class="nav-link" href="?page=zhaohaiqing">赵海清</a>
+        </div>
+        <a class="nav-cta" href="?page=home">探索团队</a>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 首页 - 新设计 -->
+        <div id="home" class="page active">
+            <div class="home-hero">
+                <div class="hero-grid"></div>
+                
+                <!-- 侧边装饰 -->
+                <div class="side-decoration">
+                    <div class="side-line"></div>
+                    <div class="side-text">Scroll Down</div>
+                    <div class="side-line"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-subtitle">Professional Team</div>
+                        <h1 class="hero-title">
+                            精英
+                            <span>团队</span>
+                        </h1>
+                        <p class="hero-desc">
+                            我们是一支充满激情与创造力的团队，专注于突破边界、追求卓越。
+                            每一位成员都是各自领域的佼佼者，共同致力于创造非凡价值。
+                        </p>
+                        
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">04<span>+</span></div>
+                                <div class="hero-stat-label">核心成员</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">99<span>%</span></div>
+                                <div class="hero-stat-label">项目成功率</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">24<span>/7</span></div>
+                                <div class="hero-stat-label">全天候响应</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-buttons">
+                            <button class="btn-primary" onclick="document.querySelector('.team-showcase').scrollIntoView({behavior: 'smooth'})">
+                                了解成员
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                            <button class="btn-secondary">联系我们</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="team-showcase">
+                            <a href="?page=zhongweifeng" class="team-card">
+                                <div class="team-card-avatar">钟</div>
+                                <div class="team-card-name">钟伟锋</div>
+                                <div class="team-card-role">前锋 / 核心</div>
+                                <div class="team-card-desc">注重细节与风险控制，构建技术防线</div>
+                            </a>
+                            
+                            <a href="?page=huangxianhang" class="team-card">
+                                <div class="team-card-avatar">黄</div>
+                                <div class="team-card-name">黄先航</div>
+                                <div class="team-card-role">中场 / 协调</div>
+                                <div class="team-card-desc">卓越视野与统筹能力，串联团队资源</div>
+                            </a>
+                            
+                            <a href="?page=wuziyang" class="team-card">
+                                <div class="team-card-avatar">吴</div>
+                                <div class="team-card-name">吴子洋</div>
+                                <div class="team-card-role">后卫 / 守护</div>
+                                <div class="team-card-desc">突破常规的创造者，擅长关键时刻扭转局势</div>
+                            </a>
+                            
+                            <a href="?page=zhaohaiqing" class="team-card">
+                                <div class="team-card-avatar">赵</div>
+                                <div class="team-card-name">赵海清</div>
+                                <div class="team-card-role">门将 / 决策</div>
+                                <div class="team-card-desc">战略眼光独到，把握方向与最终防线</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 轮播指示器 -->
+                <div class="carousel-dots">
+                    <div class="carousel-dot active"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 钟伟锋页面 -->
+        <div id="wuziyang" class="page nike-page">
+            <div class="home-hero">
+                <div class="hero-grid"></div>
+                
+                <div class="side-decoration">
+                    <div class="side-line"></div>
+                    <div class="side-text">Scroll Down</div>
+                    <div class="side-line"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-subtitle">Team Member</div>
+                        <h1 class="hero-title">
+                            钟伟锋
+                            <span>前锋 / 核心</span>
+                        </h1>
+                        <p class="hero-desc">
+                            注重细节与风险控制，构建技术防线。专注于系统架构与安全，
+                            擅长识别潜在问题并提前解决，确保项目稳定运行。
+                        </p>
+                        
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">8<span>+</span></div>
+                                <div class="hero-stat-label">年开发经验</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">30<span>+</span></div>
+                                <div class="hero-stat-label">完成项目</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">99<span>%</span></div>
+                                <div class="hero-stat-label">系统稳定性</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-buttons">
+                            <button class="btn-primary">联系我</button>
+                            <button class="btn-secondary">查看作品</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="team-showcase">
+                            <div class="team-card" style="width: 300px; z-index: 5;">
+                                <div class="team-card-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6); width: 80px; height: 80px; font-size: 32px;">钟</div>
+                                <div class="team-card-name" style="font-size: 24px;">钟伟锋</div>
+                                <div class="team-card-role">前锋 / 核心</div>
+                                <div class="team-card-desc" style="margin-top: 20px;">
+                                    <strong>个人信息：</strong> 28岁，毕业于清华大学软件工程专业<br><br>
+                                    <strong>爱好：</strong> 山地车、攀岩、徒步、编程<br><br>
+                                    <strong>特长：</strong> 系统架构、安全防护、性能优化<br><br>
+                                    <strong>技能：</strong> Java、Python、Go、Docker、Kubernetes、AWS
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 黄先航页面 -->
+        <div id="huangxianhang" class="page badminton-page">
+            <div class="home-hero">
+                <div class="hero-grid"></div>
+                
+                <div class="side-decoration">
+                    <div class="side-line"></div>
+                    <div class="side-text">Scroll Down</div>
+                    <div class="side-line"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-subtitle">Team Member</div>
+                        <h1 class="hero-title">
+                            黄先航
+                            <span>中场 / 协调</span>
+                        </h1>
+                        <p class="hero-desc">
+                            卓越视野与统筹能力，串联团队资源。专注于项目协调与资源整合，
+                            擅长将复杂的任务分解为可执行的步骤，确保团队高效运作。
+                        </p>
+                        
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">5<span>+</span></div>
+                                <div class="hero-stat-label">年项目经验</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">20<span>+</span></div>
+                                <div class="hero-stat-label">完成项目</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">95<span>%</span></div>
+                                <div class="hero-stat-label">客户满意度</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-buttons">
+                            <button class="btn-primary">联系我</button>
+                            <button class="btn-secondary">查看作品</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="team-showcase">
+                            <div class="team-card" style="width: 300px; z-index: 5;">
+                                <div class="team-card-avatar" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); width: 80px; height: 80px; font-size: 32px;">黄</div>
+                                <div class="team-card-name" style="font-size: 24px;">黄先航</div>
+                                <div class="team-card-role">中场 / 协调</div>
+                                <div class="team-card-desc" style="margin-top: 20px;">
+                                    <strong>个人信息：</strong> 26岁，毕业于北京大学计算机科学专业<br><br>
+                                    <strong>爱好：</strong> 羽毛球、摄影、旅行、阅读<br><br>
+                                    <strong>特长：</strong> 项目管理、资源协调、团队建设<br><br>
+                                    <strong>技能：</strong> PMP认证、敏捷开发、Scrum、JIRA、Confluence
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 吴子洋页面 -->
+        <div id="zhongweifeng" class="page mtb-page">
+            <div class="home-hero">
+                <div class="hero-grid"></div>
+                
+                <div class="side-decoration">
+                    <div class="side-line"></div>
+                    <div class="side-text">Scroll Down</div>
+                    <div class="side-line"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-subtitle">Team Member</div>
+                        <h1 class="hero-title">
+                            吴子洋
+                            <span>后卫 / 守护</span>
+                        </h1>
+                        <p class="hero-desc">
+                            突破常规的创造者，擅长关键时刻扭转局势。专注于创新与创意，
+                            擅长将抽象概念转化为具体实现，引领团队突破技术边界。
+                        </p>
+                        
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">6<span>+</span></div>
+                                <div class="hero-stat-label">年开发经验</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">25<span>+</span></div>
+                                <div class="hero-stat-label">完成项目</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">98<span>%</span></div>
+                                <div class="hero-stat-label">客户满意度</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-buttons">
+                            <button class="btn-primary">联系我</button>
+                            <button class="btn-secondary">查看作品</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="team-showcase">
+                            <div class="team-card" style="width: 300px; z-index: 5;">
+                                <div class="team-card-avatar" style="background: linear-gradient(135deg, #e63946, #ff6b6b); width: 80px; height: 80px; font-size: 32px;">吴</div>
+                                <div class="team-card-name" style="font-size: 24px;">吴子洋</div>
+                                <div class="team-card-role">后卫 / 守护</div>
+                                <div class="team-card-desc" style="margin-top: 20px;">
+                                    <strong>个人信息：</strong> 25岁，毕业于浙江大学计算机科学专业<br><br>
+                                    <strong>爱好：</strong> 足球、篮球、音乐、旅行<br><br>
+                                    <strong>特长：</strong> 前端开发、UI/UX设计、创新思维<br><br>
+                                    <strong>技能：</strong> JavaScript、React、Vue、Node.js、Figma、Adobe XD
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 赵海清页面 -->
+        <div id="zhaohaiqing" class="page profile-page">
+            <div class="home-hero">
+                <div class="hero-grid"></div>
+                
+                <div class="side-decoration">
+                    <div class="side-line"></div>
+                    <div class="side-text">Scroll Down</div>
+                    <div class="side-line"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-subtitle">Team Member</div>
+                        <h1 class="hero-title">
+                            赵海清
+                            <span>门将 / 决策</span>
+                        </h1>
+                        <p class="hero-desc">
+                            战略眼光独到，把握方向与最终防线。专注于业务分析与战略规划，
+                            擅长制定长期发展路线，带领团队实现目标。
+                        </p>
+                        
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">10<span>+</span></div>
+                                <div class="hero-stat-label">年管理经验</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">50<span>+</span></div>
+                                <div class="hero-stat-label">完成项目</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-number">100<span>%</span></div>
+                                <div class="hero-stat-label">目标达成率</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-buttons">
+                            <button class="btn-primary">联系我</button>
+                            <button class="btn-secondary">查看作品</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="team-showcase">
+                            <div class="team-card" style="width: 300px; z-index: 5;">
+                                <div class="team-card-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444); width: 80px; height: 80px; font-size: 32px;">赵</div>
+                                <div class="team-card-name" style="font-size: 24px;">赵海清</div>
+                                <div class="team-card-role">门将 / 决策</div>
+                                <div class="team-card-desc" style="margin-top: 20px;">
+                                    <strong>个人信息：</strong> 30岁，毕业于复旦大学工商管理专业<br><br>
+                                    <strong>爱好：</strong> 篮球、围棋、阅读、演讲<br><br>
+                                    <strong>特长：</strong> 战略规划、业务分析、团队管理<br><br>
+                                    <strong>技能：</strong> 商业分析、项目管理、领导力、沟通协调
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 固定底部备案栏 -->
+    <footer class="footer">
+        <span>© 2026 Team Portfolio | 京ICP备XXXXXXXX号-1 | 京公网安备 XXXXXXXXXXXX号</span>
+    </footer>
+
+    <script>
+        // 页面切换逻辑
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const targetPage = document.getElementById(pageId);
+            targetPage.classList.add('active');
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageIndex = ['home', 'wuziyang', 'huangxianhang', 'zhongweifeng', 'zhaohaiqing'].indexOf(pageId);
+            if (pageIndex !== -1 && navLinks[pageIndex]) {
+                navLinks[pageIndex].classList.add('active');
+            }
+            
+            document.getElementById('navLinks').classList.remove('open');
+            window.scrollTo(0, 0);
+        }
+        
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+        
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = getUrlParameter('page') || 'home';
+            showPage(page);
+        });
+    </script>
+</body>
+</html>
